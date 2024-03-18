@@ -112,14 +112,14 @@ class BoockInfo(ft.View):
             file_url = browser.find("a", id="downloadB")
             time.sleep(2)
             browser.follow_link(file_url)
-            with open(f"/sdcard/Download/{filename}", "wb") as epub_file:
+            with open(f"/storage/emulated/0/Download/{filename}", "wb") as epub_file:
                 epub_file.write(browser.response.content)
-            
+            dlg_modal.content = ft.Text("Descarga Realizada")
+            self.page.update()
         except Exception:
             dlg_modal.content = ft.Text("Descarga fallida, revise su conexion a internet.")
             self.page.update()
             time.sleep(2)
-        dlg_modal.content = ft.Text(f"{os.path.abspath(filename)}")
         self.page.update()
         
         
