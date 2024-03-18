@@ -34,21 +34,30 @@ class listBook(ft.View):
                 )
             )
         self.horizontal_alignment = "center"
-        self.controls.append(ft.Text("Generos",size=24))
-        self.controls.append(self.list_genders)
+        self.main_screen = ft.Column(
+                    controls=[
+                        ft.Text("Generos",size=24),
+                        self.list_genders
+                    ]
+                )
+        self.controls.append(
+            ft.SafeArea(
+                content=self.main_screen
+            )
+        )
         self.page.update()
     
     def gender(self,e):
         value = e.control.data
         nombre = str(value).split("/")[2]
-        self.controls = []
-        self.controls.append(ft.ProgressBar())
+        self.main_screen.controls = []
+        self.main_screen.controls.append(ft.ProgressBar())
         self.update()
-        self.controls = []
-        self.controls.append(
+        self.main_screen.controls = []
+        self.main_screen.controls.append(
             ft.Text(f"{nombre}",size=24)
         )
-        self.controls.append(ft.Divider(height=10,color=ft.colors.WHITE10))
+        self.main_screen.controls.append(ft.Divider(height=10,color=ft.colors.WHITE10))
         pagina = requests.get(f"https://ww3.lectulandia.com{value}")
         data = pagina.text
         soup = BeautifulSoup(data, 'html.parser')
@@ -57,7 +66,7 @@ class listBook(ft.View):
             title = card.find('a', class_='title').text.strip()
             image_src = card.find('img')['src']
             book_link = card.find('a', class_='title')['href']
-            self.controls.append(
+            self.main_screen.controls.append(
                 ft.TextButton(
                     content=ft.Column(
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,

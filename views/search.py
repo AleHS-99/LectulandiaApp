@@ -37,7 +37,7 @@ class SearchView(ft.View):
             )
         )
         
-        self.controls.append(self.main_screen)
+        self.controls.append(ft.SafeArea(content=self.main_screen))
         self.scroll="always"
         self.page.update()
 

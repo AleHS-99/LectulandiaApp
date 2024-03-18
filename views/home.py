@@ -70,7 +70,7 @@ class homeView(ft.View):
         )
         self.adaptive = True
         self.scroll = "always"
-        self.controls.append(home_screen)
+        self.controls.append(ft.SafeArea(content=home_screen))
         page.update()
         load1 = threading.Thread(target=self.loading_books1)
         load2 = threading.Thread(target=self.loading_books2)

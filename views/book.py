@@ -35,7 +35,10 @@ class BoockInfo(ft.View):
             try:
                 sinopsis = soup.find('div', id='description').span.text
             except Exception:
-                sinopsis = "No hay descripción disponible"
+                try:
+                    sinopsis = soup.find('div', id='sinopsis').p.text
+                except Exception:
+                    sinopsis = "No hay descripción disponible"
         
         # Extraer el enlace relacionado al libro
         enlace_libro = soup.find('div', id='downloadContainer').a['href']
@@ -54,27 +57,30 @@ class BoockInfo(ft.View):
                     break
         download_link = f"https://www.antupload.com/file/{linkCode_value}"
         self.controls.append(
-            ft.Column(
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                controls=[
-                    ft.Row(
-                        controls=[
-                            ft.IconButton(icon=ft.icons.ARROW_BACK, icon_color='white', on_click= lambda x: self.page.go(go_back))
-                        ]
-                    ),
-                    ft.Divider(height=5,color='transparent'),
-                    ft.Text(f"{titulo}", size=18,weight="bold"),
-                    ft.Image(src=f"{imagen_portada}",
-                             height=180,
-                                fit=ft.ImageFit.FILL,
-                                repeat=ft.ImageRepeat.NO_REPEAT,
-                                border_radius=ft.border_radius.all(10),),
-                    ft.Text(f"{autor}"),
-                    ft.TextButton("Descargar", data=download_link,icon=ft.icons.DOWNLOAD,icon_color="white",on_click=self.download),
-                    ft.Text(sinopsis)
-                    
-                ]
+            ft.SafeArea(
+                content=ft.Column(
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    controls=[
+                        ft.Row(
+                            controls=[
+                                ft.IconButton(icon=ft.icons.ARROW_BACK, icon_color='white', on_click= lambda x: self.page.go(go_back))
+                            ]
+                        ),
+                        ft.Divider(height=5,color='transparent'),
+                        ft.Text(f"{titulo}", size=18,weight="bold"),
+                        ft.Image(src=f"{imagen_portada}",
+                                height=180,
+                                    fit=ft.ImageFit.FILL,
+                                    repeat=ft.ImageRepeat.NO_REPEAT,
+                                    border_radius=ft.border_radius.all(10),),
+                        ft.Text(f"{autor}"),
+                        ft.TextButton("Descargar", data=download_link,icon=ft.icons.DOWNLOAD,icon_color="white",on_click=self.download),
+                        ft.Text(sinopsis)
+                        
+                    ]
+                )
             )
+            
         )
         self.scroll="always"
         self.page.update()
@@ -112,10 +118,11 @@ class BoockInfo(ft.View):
             file_url = browser.find("a", id="downloadB")
             time.sleep(2)
             browser.follow_link(file_url)
-            with open(f"/storage/emulated/0/Download/{filename}", "wb") as epub_file:
+            with open(f"/sdcard/Download/{filename}", "wb") as epub_file:
                 epub_file.write(browser.response.content)
             dlg_modal.content = ft.Text("Descarga Realizada")
             self.page.update()
+            time.sleep(2)
         except Exception:
             dlg_modal.content = ft.Text("Descarga fallida, revise su conexion a internet.")
             self.page.update()
