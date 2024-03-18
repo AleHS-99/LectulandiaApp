@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import werkzeug
 werkzeug.cached_property = werkzeug.utils.cached_property
 from robobrowser import RoboBrowser
+import os
 
 class BoockInfo(ft.View):
     def __init__(self,page:ft.Page):
@@ -113,11 +114,12 @@ class BoockInfo(ft.View):
             browser.follow_link(file_url)
             with open(f"{filename}", "wb") as epub_file:
                 epub_file.write(browser.response.content)
+            
         except Exception:
             dlg_modal.content = ft.Text("Descarga fallida, revise su conexion a internet.")
             self.page.update()
             time.sleep(2)
-        dlg_modal.open = False
+        dlg_modal.content = ft.Text(f"{os.path.abspath(filename)}")
         self.page.update()
         
         
