@@ -112,7 +112,7 @@ class BoockInfo(ft.View):
             file_url = browser.find("a", id="downloadB")
             time.sleep(2)
             browser.follow_link(file_url)
-            with open(f"{filename}", "wb") as epub_file:
+            with open(f"/sdcard/Download/{filename}", "wb") as epub_file:
                 epub_file.write(browser.response.content)
             
         except Exception:
