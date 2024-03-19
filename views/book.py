@@ -38,7 +38,11 @@ class BoockInfo(ft.View):
                 try:
                     sinopsis = soup.find('div', id='sinopsis').p.text
                 except Exception:
-                    sinopsis = "No hay descripción disponible"
+                    try:
+                        sinopsis = soup.find('p', class_='description').text
+                    except Exception:
+
+                        sinopsis = "No hay descripción disponible"
         
         # Extraer el enlace relacionado al libro
         enlace_libro = soup.find('div', id='downloadContainer').a['href']

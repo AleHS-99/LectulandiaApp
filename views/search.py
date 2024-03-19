@@ -14,7 +14,7 @@ class SearchView(ft.View):
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             controls = []
         )
-
+        self.page_number = 2
         self.main_screen = ft.Container(
             padding=ft.padding.only(top=20,left=15,right=15),
             content=ft.Column(
@@ -86,7 +86,62 @@ class SearchView(ft.View):
                     on_click=self.go_boock
                 )
             )
+        extras = requests.get(f"https://ww3.lectulandia.com/search/{parse_value}/page/{self.page_number}/")
+        if extras.status_code == 200:
+            self.list_boocks.controls.append(
+                ft.TextButton("Mostrar Más", data = f"https://ww3.lectulandia.com/search/{parse_value}/page/", on_click=self.show_more)
+            )
+            self.update()
         self.page.update()
+
+    def show_more(self, e):
+        value = e.control.data
+        self.list_boocks.controls.pop()
+        self.list_boocks.controls.append(ft.ProgressBar())
+        self.update()
+        pagina = requests.get(f"{value}{self.page_number}/")
+        self.page_number +=1
+        data = pagina.text
+        soup = BeautifulSoup(data, 'html.parser')
+        cards = soup.find_all(class_='card')
+        self.list_boocks.controls.pop()
+        for card in cards:
+            title = card.find('a', class_='title').text.strip()
+            image_src = card.find('img')['src']
+            book_link = card.find('a', class_='title')['href']
+            self.list_boocks.controls.append(
+                ft.TextButton(
+                    content=ft.Column(
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        controls=[
+                            ft.Image(
+                                src=image_src,
+                                height=180,
+                                fit=ft.ImageFit.NONE,
+                                repeat=ft.ImageRepeat.NO_REPEAT,
+                                border_radius=ft.border_radius.all(10),
+                            ),
+                            ft.Text(f"{title}", color="white"),
+                        ]
+                    ),
+                    style=ft.ButtonStyle(
+                        color={
+                            ft.MaterialState.HOVERED: ft.colors.WHITE,
+                            ft.MaterialState.FOCUSED: ft.colors.BLUE,
+                            ft.MaterialState.DEFAULT: ft.colors.BLACK,
+                        }
+                    ),
+                    data=book_link,
+                    on_click=self.go_boock
+                )
+            )
+        extras = requests.get(f"{value}{self.page_number}")
+        if extras.status_code == 200:
+            self.list_boocks.controls.append(
+                ft.TextButton("Mostrar Más", data = f"{value}{self.page_number}", on_click=self.show_more)
+            )
+            self.update()
+        self.update()
 
 
     def go_boock(self,e):
